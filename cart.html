@@ -1,0 +1,159 @@
+<html>
+	<head>
+		<link href="style.css" rel="stylesheet" type="text/css">
+
+
+	</head>
+	<body>
+		<div style="margin-left: 50px">
+			<button id="add" onclick="add_to_cart(9373,160)">add to cart</button>
+		</div>
+		<div style="margin-left: 50px">
+			<button id="add" onclick="add_to_cart(8965,300)">add to cart</button>
+		</div>
+		<div style="margin-left: 50px">
+			<button id="add" onclick="add_to_cart(1245,80)">add to cart</button>
+		</div>
+		<br>
+		<div style="margin-left: 50px">
+			<button id="bt1" onclick="show_cart()">show cart</button>
+		</div>	<br>
+		<div id="content">
+			
+		</div>	
+	   
+	</body>
+
+	<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.6.1/firebase.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-analytics.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyChzOTuLJBGoh4Vh_Noohifu5YscSDNm1I",
+    authDomain: "sankproj.firebaseapp.com",
+    databaseURL: "https://sankproj.firebaseio.com",
+    projectId: "sankproj",
+    storageBucket: "sankproj.appspot.com",
+    messagingSenderId: "1014889798652",
+    appId: "1:1014889798652:web:96fb9cab4a81c22b257079",
+    measurementId: "G-TBE9WKN481"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>
+
+	<script async >
+		function add_to_cart(id,price,quantity=1)
+	    {
+           	var id;
+            
+			cartRef=firebase.database().ref().child("agri").child("cart");
+		 	var uname =sessionStorage.getItem("Username");
+			var upass =sessionStorage.getItem("Password");
+		 	var count=0;
+		 	var quantity;
+		 	cartRef.child(uname).once('value', function(snapshot)
+		    {
+				var flag=true;
+  				if (snapshot.exists())
+				 {
+    				count=snapshot.numChildren();
+    				snapshot.forEach(function (childsnapshot)
+				    {
+						if(childsnapshot.child("product_id").val()==id)
+						{
+							flag=false;
+						}
+					});
+                    
+			    }
+
+				if(flag==true)
+				{
+					console.log(count);
+				    cartRef.child(uname).child(id).child("product_id").set(id);
+				    cartRef.child(uname).child(id).child("quantity").set(quantity);
+					cartRef.child(uname).child(id).child("price").set(price);
+					alert("succesfully added to cart ");
+					
+				}
+				else
+				{
+                    alert("Item already present in cart");
+				}
+				   
+				  
+			});
+		}
+		function show_cart()
+		{
+
+			cartRef=firebase.database().ref().child("agri").child("cart");
+		 	var uname =sessionStorage.getItem("Username");
+		 	var content=document.getElementById("content");
+			 cartRef.child(uname).once('value', function(snapshot){
+			 	content.innerHTML ="";
+				if (snapshot.exists())
+				 {
+				 	
+					 var id;
+					 var quantity;
+					 var price;
+					 var total=0;
+                   // count=snapshot.numChildren();
+    				snapshot.forEach(function (childsnapshot)
+				    {
+						id=childsnapshot.child("product_id").val();
+						quantity=childsnapshot.child("quantity").val();
+					//	if (childsnapshot.child("Total").val()==null) 
+					//	{ 
+						price=childsnapshot.child("price").val();
+						total=total+(price*quantity);
+							//-- showing elements on cart 
+						content.innerHTML +="<div style=' width:50px;'><h1 style='color:red;'>"+id+"</h1><input type='number' id='select_quantity' name='quantity' onchange='on_quantity_changed(this.value,"+id+")' value='"+quantity+"' min='1' max='15'></div><button id='removebt' onclick='remove_item("+id+")'>remove</button>";
+						
+					//	}
+					//	else
+					//	{
+
+					//	}
+						
+					});
+					
+					content.innerHTML+="<h4>Total cost is : "+total+"  RS</h4><button id ='buyallbt' onclick='buy_all_items()'>Buy all</button>";
+                     
+				 }
+				 else
+				 {
+
+					 alert("your cart is Empty Nothing to show")
+				 }
+			 });
+		}
+		function on_quantity_changed(changed_quantity,id)
+		{
+			var changed_quantity;
+				var cartRef=firebase.database().ref().child("agri").child("cart");
+				var uname =sessionStorage.getItem("Username");
+                   cartRef.child(uname).child(id).child("quantity").set(changed_quantity);
+                   show_cart();
+        }
+		function remove_item(id)
+		{
+			rmRef=firebase.database().ref().child("agri").child("cart");
+			var uname =sessionStorage.getItem("Username");
+
+			rmRef.child(uname).child(id).remove();
+			show_cart();
+
+
+			
+		}
+	</script>
+</html>

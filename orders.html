@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>my order</title>
+	<!-- Font Awesome Icon Library -->
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+        <div style="margin-left: 50px">
+			<button id="place" onclick="add_to_my_order(1,'axe',160,true)">place your order axe </button>
+		</div>
+		<br>
+		<div style="margin-left: 50px">
+			<button id="place" onclick="add_to_my_order(2,'2 4 d',80,true)">place your order 2 4 d </button>
+		</div>
+		<br>
+		<div style="margin-left: 50px">
+			<button id="place" onclick="add_to_my_order(3,'tractor',10205,false)">place your order tractor </button>
+		</div>
+		<br>
+		<div style="margin-left: 50px">
+			<button id="bt1" onclick="show_order()">show my orders</button>
+		</div>
+			<br>
+		<div id="content">
+			
+		</div>
+</body>
+	<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.6.1/firebase.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-analytics.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyChzOTuLJBGoh4Vh_Noohifu5YscSDNm1I",
+    authDomain: "sankproj.firebaseapp.com",
+    databaseURL: "https://sankproj.firebaseio.com",
+    projectId: "sankproj",
+    storageBucket: "sankproj.appspot.com",
+    messagingSenderId: "1014889798652",
+    appId: "1:1014889798652:web:96fb9cab4a81c22b257079",
+    measurementId: "G-TBE9WKN481"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>
+<script async >
+		function add_to_my_order(ord_id,prod_name,price,del_status)
+	    {
+           	var id;
+            
+		 	var uname =sessionStorage.getItem("Username");
+			var upass =sessionStorage.getItem("Password");
+
+			odRef=firebase.database().ref().child("agri").child("users").child(uname).child("orders");
+
+			odRef.child(ord_id).child("order_id").set(ord_id);
+			odRef.child(ord_id).child("prod_name").set(prod_name);			
+			odRef.child(ord_id).child("price").set(price);
+			odRef.child(ord_id).child("del_status").set(del_status);
+
+			alert("item ordered ......");						
+		}
+		function show_order() {
+			var uname =sessionStorage.getItem("Username");
+			odRef=firebase.database().ref().child("agri").child("users").child(uname).child("orders");
+			var content=document.getElementById("content");
+			var ord_id;
+			var prod_name;
+			var price;
+			var del_status;
+               odRef.once('value', function(snapshot){
+			snapshot.forEach(function(childsnapshot)
+			{
+                 ord_id=childsnapshot.child("order_id").val();
+                 prod_name=childsnapshot.child("prod_name").val();
+                 price=childsnapshot.child("price").val();
+                 del_status=childsnapshot.child("del_status").val();
+
+                 content.innerHTML +="<div style=' width:400px;'><h1 style='color:red;'>"+ord_id+"</h1>"+prod_name+""  +   price   +"<span style='color:blue;margin-left: 30px;' id='rating_body' onclick='rating()'> Rate & reviev The Product</span></div>";     
+			});
+		});
+		}
+		function rating()
+		{
+                document.getElementById("rating_body").innerHTML="<span  onmouseover='starmark(this)' onclick='starmark(this)' id='1one' style='font-size:15px;cursor:pointer;'  class='fa fa-star checked'></span><span  onmouseover='starmark(this)' onclick='starmark(this)' id='2one' style='font-size:15px;cursor:pointer;'  class='fa fa-star checked'></span><span  onmouseover='starmark(this)' onclick='starmark(this)' id='3one' style='font-size:15px;cursor:pointer;'  class='fa fa-star checked'></span><span  onmouseover='starmark(this)' onclick='starmark(this)' id='4one' style='font-size:15px;cursor:pointer;'  class='fa fa-star checked'></span><span  onmouseover='starmark(this)' onclick='starmark(this)' id='5one' style='font-size:15px;cursor:pointer;'  class='fa fa-star checked'></span><br/><textarea  style='margin-top:5px;' class='form-control' rows='3' id='comment' placeholder='Enter your review'></textarea><button  onclick='submit_rating()' type='button' style='margin-top:10px;margin-left:5px;' class='btn btn-lg btn-success'>Submit</button>";
+		}
+		var count;
+
+   function starmark(item)
+   { 
+     count=item.id[0];
+     sessionStorage.starRating = count;
+     var subid= item.id.substring(1);
+     for(var i=0;i<5;i++)
+     {
+        if(i<count)
+       {
+          document.getElementById((i+1)+subid).style.color="orange";
+       }
+       else
+       {
+          document.getElementById((i+1)+subid).style.color="black";
+       }
+     }
+   }
+	function submit_rating()
+	{
+		//store count and text area content in db
+	}	
+</script>
+</html>
+
+
+
+

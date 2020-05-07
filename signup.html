@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" type="text/css" href="style.css">
+<meta charset="UTF-8">
+<title>signup</title>
+</head>
+<body>
+
+ <div class="loginbox">
+ 
+ <h1>Register</h1>
+ 
+  <div  class="textbox">
+  <input id="mail" type="text" placeholder="Enter your email" >
+  </div>
+  <div class="textbox">
+  <input id="Username" type="text" placeholder="Username" >
+  </div>
+ 
+  <div class ="textbox">
+  <input id="setpass" type="password" placeholder="set password" >
+  </div>
+  
+  <div class="textbox">
+  <input id="cpass" type="password" placeholder="Confirm password" >
+  </div>
+  
+  <input class="btn" type="submit" value="Register" onclick="validate()">
+  <br>
+  <a href="login.html">have an account</a>
+ </div>
+
+</body>
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.6.1/firebase.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-analytics.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyChzOTuLJBGoh4Vh_Noohifu5YscSDNm1I",
+    authDomain: "sankproj.firebaseapp.com",
+    databaseURL: "https://sankproj.firebaseio.com",
+    projectId: "sankproj",
+    storageBucket: "sankproj.appspot.com",
+    messagingSenderId: "1014889798652",
+    appId: "1:1014889798652:web:96fb9cab4a81c22b257079",
+    measurementId: "G-TBE9WKN481"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>
+<script >
+  
+
+  var count=0;
+  function validate()
+  {
+    
+    var name=document.getElementById("Username").value;
+    var setpass=document.getElementById('setpass').value;
+    var cpass=document.getElementById('cpass').value;
+    var mail=document.getElementById('mail').value;
+    
+   usRef=firebase.database().ref().child("agri").child("users");
+   if (name=="" || setpass=="" || cpass=="" || mail=="")
+    {
+      window.alert("Please Enter all the fields");
+    }
+    else
+    {
+       if(setpass!=cpass)
+      {
+         window.alert("Confirmed password is not matching please re-enter confirmed password")
+         cpass.innerhtml="";
+      }
+      else
+      {
+        console.log(name.value);
+       usRef.child(name).child("Username").set(name);
+       usRef.child(name).child("Mail-id").set(mail);
+       usRef.child(name).child("Password").set(cpass);
+      }
+    }     
+   
+  }
+</script>
+</html>
+
