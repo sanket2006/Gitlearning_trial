@@ -1,0 +1,86 @@
+function doCOD()
+        {
+            $("#loadMe").modal({
+                backdrop: "static", //remove ability to close modal with click
+                keyboard: false, //remove option to close with keyboard
+                show: true //Display loader!
+            });
+            firebase.database().ref().child("Users").child(localStorage.getItem("Username")).child("cart").orderByChild("name").on('value', function(snapshot1) {
+              if(snapshot1.exists())
+              {
+                snapshot1.forEach(function(childSnapshot) {
+                    var orderaddress={
+                        address:document.getElementById("aptname").value+","+document.getElementById("areaname").value+","+document.getElementById("cityname").value+","+document.getElementById("distname").value,
+                        phone:document.getElementById("phone").value,
+                        postalCode:document.getElementById("postcode").value
+                    };
+                    var today = new Date();
+                    var date = today.getFullYear()+'/'+(today.getMonth()+1)+'/'+today.getDate();
+                    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                    var dateTime = date+' '+time;
+                    var stage1={
+                        date:dateTime,
+                        messege:"Order placed successfully",
+                        orderStatus:"COMPLETED",
+                        orderStatusno:1
+                    };
+                    var stage2={
+                        date:dateTime,
+                        messege:"Order Confirming",
+                        orderStatus:"ACTIVE",
+                        orderStatusno:2
+                    };
+                    var stage3={
+                        date:dateTime,
+                        messege:"Order Shipped",
+                        orderStatus:"INACTIVE",
+                        orderStatusno:3
+                    };
+                    var stage4={
+                        date:dateTime,
+                        messege:"Order out for delivery",
+                        orderStatus:"INACTIVE",
+                        orderStatusno:4
+                    };
+                    var stage5={
+                        date:dateTime,
+                        messege:"Order Successfully Deliverd",
+                        orderStatus:"INACTIVE",
+                        orderStatusno:5
+                    };
+                    var orderstatus={
+                        Stage1:stage1,
+                        Stage2:stage2,
+                        Stage3:stage3,
+                        Stage4:stage4,
+                        Stage5:stage5
+                    };
+                   
+
+                    var order={
+                        ordid:genOrderId(),
+                        orderstatus:orderstatus,
+                        orderaddress:orderaddress,
+                        Delivery:"Pending",
+                        catagory:childSnapshot.val().catagory,
+                        customer:localStorage.getItem("Username"),
+                        image:childSnapshot.val().image,
+                        name:childSnapshot.val().name,
+                        payment:"Pending",
+                        price:childSnapshot.val().price,
+                        qty:childSnapshot.val().qty,
+                        totalprice:parseInt(childSnapshot.val().price)*parseInt(childSnapshot.val().qty),
+                        seller:childSnapshot.val().seller
+                    };
+                    firebase.database().ref().child("Users").child(localStorage.getItem("Username")).child("orders").child(order.ordid).set(order);
+                    firebase.database().ref().child("Users").child(order.seller).child("delivery").child(order.ordid).set(order);
+                });
+              }
+              setTimeout(function() {
+                $("#loadMe").modal("hide");
+              }, 2000);    
+            });
+        }
+        function genOrderId() {
+            return "ORDER" + Math.floor(100000000 + Math.random() * 900000000);
+        }
