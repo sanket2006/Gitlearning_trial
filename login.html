@@ -1,0 +1,90 @@
+<html>
+<head>    
+    <link rel="stylesheet" type="text/css" href="style.css">
+<meta charset="UTF-8">
+<title>Login</title>
+</head>
+<body>
+
+ <div class="loginbox">
+ 
+ <h1>Login</h1>
+ 
+  
+  <div class="textbox">
+  <input id="Username" type="text" placeholder="Username" >
+  </div>
+ 
+  <div class ="textbox">
+  <input id="pass" type="password" placeholder=" password" >
+  </div>
+  
+  <input class="btn" type="submit" value="Login" onclick="validate()">
+  <br>
+
+  <a href="signup.html">don't have an account register here</a>
+ </div>
+
+</body>
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.6.1/firebase.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-analytics.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyChzOTuLJBGoh4Vh_Noohifu5YscSDNm1I",
+    authDomain: "sankproj.firebaseapp.com",
+    databaseURL: "https://sankproj.firebaseio.com",
+    projectId: "sankproj",
+    storageBucket: "sankproj.appspot.com",
+    messagingSenderId: "1014889798652",
+    appId: "1:1014889798652:web:96fb9cab4a81c22b257079",
+    measurementId: "G-TBE9WKN481"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>
+<script >
+  
+  function validate()
+  {
+    
+    var name=document.getElementById("Username").value;
+    var pass=document.getElementById('pass').value;
+
+    var fireref=firebase.database().ref().child("agri").child("users");
+    fireref.on('value',function(datasnapshot)
+    {
+           datasnapshot.forEach(function(childSnapshot)
+            {
+            
+              var uname=childSnapshot.val().Username;
+              var upass=childSnapshot.val().Password;
+              if(name == uname)
+              {
+                 if(pass == upass)
+                 {
+                    sessionStorage.setItem("Username", uname);
+                    sessionStorage.setItem("Password", upass);
+                    window.location = "orders.html";
+                 }
+                 else
+                 {
+                  window.alert("Incorrect password");
+                 
+                 }
+              }
+
+            });
+            //window.alert("Invalid Login credentials..")
+    });
+    
+
+  }
+</script>
+</html>
